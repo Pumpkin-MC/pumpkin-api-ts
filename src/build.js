@@ -1,15 +1,17 @@
 #! /usr/bin/env node
 
-const esbuild = require("esbuild");
-const { execSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+import * as esbuild from "esbuild";
+import {
+  componentize,
+  version as componentize_version,
+} from "@bytecodealliance/componentize-js";
+import * as path from "node:path";
+import * as fs from "node:fs";
 
 async function buildPlugin(entryPath, outputPath, witDir) {
   const tempJs = path.join(path.dirname(outputPath), "temp.js");
 
   console.log(`1. Bundling ${entryPath}...`);
-  // 1. Bundle with esbuild
   await esbuild.build({
     entryPoints: [entryPath],
     bundle: true,
@@ -20,14 +22,19 @@ async function buildPlugin(entryPath, outputPath, witDir) {
     external: ["pumpkin:plugin/*"],
   });
 
-  console.log(`2. Componentizing with jco...`);
-  // 2. Componentize with jco
+  console.log(
+    `2. Running through \`componentize-js\` ` + componentize_version + `...`,
+  );
   try {
-    const cmd = `npx jco componentize ${tempJs} --wit ${witDir} -n plugin -o ${outputPath}`;
-    console.log(`Running: ${cmd}`);
-    execSync(cmd, { stdio: "inherit" });
+    const { component } = await componentize({
+      worldName: "plugin",
+      witPath: witDir,
+      sourcePath: tempJs,
+    });
+
+    fs.writeFileSync(outputPath, component);
   } catch (err) {
-    console.error("Failed to componentize:");
+    console.error("Failed to componentize:", err);
     process.exit(1);
   } finally {
     // Clean up
@@ -48,7 +55,8 @@ if (args.length < 2) {
 const entry = args[0];
 const output = args[1];
 const wit =
-  args[2] || path.join(__dirname, "../wit/repo/pumpkin-plugin-wit/v0.1.0");
+  args[2] ||
+  path.join(import.meta.dirname, "../wit/repo/pumpkin-plugin-wit/v0.1.0");
 
 buildPlugin(entry, output, wit).catch((err) => {
   console.error(err);
