@@ -1,0 +1,30 @@
+{
+  "name": "@pumpkinmc/pumpkin-api-ts",
+  "version": "0.1.0-dev0",
+  "description": "Pumpkin plugin API for TypeScript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src/build.js",
+    "wit"
+  ],
+  "publishConfig": {
+    "tag": "dev"
+  },
+  "bin": {
+    "pumpkin-api-build": "src/build.js"
+  },
+  "scripts": {
+    "generate": "jco guest-types wit/repo/pumpkin-plugin-wit/v0.1.0 -n plugin -o src/gen",
+    "build": "tsc",
+    "build-plugin": "node src/build.js"
+  },
+  "dependencies": {
+    "@bytecodealliance/jco": "^1.17.6"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.2"
+  }
+}
