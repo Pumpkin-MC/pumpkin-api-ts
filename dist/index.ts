@@ -1,11 +1,15 @@
 /// <reference path="./bindings/index.d.ts" />
 
-import { Command, CommandSender, ConsumedArgs } from "pumpkin:plugin/command";
-import { Context } from "pumpkin:plugin/context";
-import { Event, EventType, EventPriority } from "pumpkin:plugin/event";
-import { PluginMetadata } from "pumpkin:plugin/metadata";
-import * as scheduler from "pumpkin:plugin/scheduler";
-import { Server } from "pumpkin:plugin/server";
+import {
+  Command,
+  CommandSender,
+  ConsumedArgs,
+} from "pumpkin:plugin/command@0.1.0";
+import { Context } from "pumpkin:plugin/context@0.1.0";
+import { Event, EventType, EventPriority } from "pumpkin:plugin/event@0.1.0";
+import { PluginMetadata } from "pumpkin:plugin/metadata@0.1.0";
+import * as scheduler from "pumpkin:plugin/scheduler@0.1.0";
+import { Server } from "pumpkin:plugin/server@0.1.0";
 
 export type EventHandler<T = any> = (srv: Server, evt: T) => T | void;
 export type CommandHandler = (
@@ -153,6 +157,7 @@ export const metadata = {
       authors: [],
       description: "No metadata",
       dependencies: [],
+      permissions: [],
     };
   },
 };

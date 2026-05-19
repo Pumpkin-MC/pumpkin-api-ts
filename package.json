@@ -16,13 +16,13 @@
     "pumpkin-plugin-build": "src/build.js"
   },
   "scripts": {
-    "prepare": "jco guest-types wit/repo/pumpkin-plugin-wit/v0.1.0 -n plugin -o dist/bindings --name index"
+    "prepare": "jco guest-types wit/repo/pumpkin-plugin-wit/v0.1 -n plugin -o dist/bindings --name index"
   },
   "dependencies": {
-    "@bytecodealliance/componentize-js": "^0.20.0",
+    "@bytecodealliance/componentize-js": "0.21.0-rc.0",
     "esbuild": "^0.28.0"
   },
   "devDependencies": {
-    "@bytecodealliance/jco": "1.17.6"
+    "@bytecodealliance/jco": "^1.19.0"
   }
 }

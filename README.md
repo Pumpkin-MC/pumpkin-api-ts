@@ -25,11 +25,11 @@ Example:
 ```typescript
 import { Plugin, registerPlugin } from "@pumpkinmc/pumpkin-api-ts";
 
-import { PluginMetadata } from "pumpkin:plugin/metadata";
-import { Context } from "pumpkin:plugin/context";
-import { TextComponent } from "pumpkin:plugin/text";
-import * as logging from "pumpkin:plugin/logging";
-import { PlayerJoinEventData } from "pumpkin:plugin/event";
+import { PluginMetadata } from "pumpkin:plugin/metadata@0.1.0";
+import { Context } from "pumpkin:plugin/context@0.1.0";
+import { TextComponent } from "pumpkin:plugin/text@0.1.0";
+import * as logging from "pumpkin:plugin/logging@0.1.0";
+import { PlayerJoinEventData } from "pumpkin:plugin/event@0.1.0";
 
 class MyPlugin extends Plugin {
   metadata(): PluginMetadata {
@@ -39,6 +39,7 @@ class MyPlugin extends Plugin {
       authors: ["alex"],
       description: "A sample plugin written in TypeScript",
       dependencies: [],
+      permissions: []
     };
   }
   onLoad(ctx: Context): void {
