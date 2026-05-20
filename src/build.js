@@ -56,7 +56,7 @@ const entry = args[0];
 const output = args[1];
 const wit =
   args[2] ||
-  path.join(import.meta.dirname, "../wit/repo/pumpkin-plugin-wit/v0.1");
+  path.join(import.meta.dirname, "../wit/v0.1");
 
 buildPlugin(entry, output, wit).catch((err) => {
   console.error(err);

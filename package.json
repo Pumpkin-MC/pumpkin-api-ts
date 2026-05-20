@@ -7,7 +7,7 @@
   "files": [
     "dist",
     "src/build.js",
-    "wit/repo/pumpkin-plugin-wit"
+    "wit"
   ],
   "publishConfig": {
     "tag": "dev"
@@ -16,10 +16,10 @@
     "pumpkin-plugin-build": "src/build.js"
   },
   "scripts": {
-    "prepare": "jco guest-types wit/repo/pumpkin-plugin-wit/v0.1 -n plugin -o dist/bindings --name index"
+    "prepare": "jco guest-types wit/v0.1 -n plugin -o dist/bindings --name index"
   },
   "dependencies": {
-    "@bytecodealliance/componentize-js": "0.21.0-rc.0",
+    "@bytecodealliance/componentize-js": "^0.21.0",
     "esbuild": "^0.28.0"
   },
   "devDependencies": {
