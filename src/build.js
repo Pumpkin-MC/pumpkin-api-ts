@@ -29,7 +29,7 @@ async function buildPlugin(entryPath, outputPath, witDir) {
     const { component } = await componentize({
       worldName: "plugin",
       witPath: witDir,
-      sourcePath: tempJs,
+      sourcePath: tempJs
     });
 
     fs.writeFileSync(outputPath, component);
@@ -56,7 +56,7 @@ const entry = args[0];
 const output = args[1];
 const wit =
   args[2] ||
-  path.join(import.meta.dirname, "../wit/repo/pumpkin-plugin-wit/v0.1.0");
+  path.join(import.meta.dirname, "../wit/v0.1");
 
 buildPlugin(entry, output, wit).catch((err) => {
   console.error(err);
