@@ -1,6 +1,6 @@
 {
   "name": "@pumpkinmc/pumpkin-api-ts",
-  "version": "0.1.0-dev2",
+  "version": "0.1.0-dev3",
   "description": "Pumpkin plugin API for TypeScript",
   "main": "dist/index.ts",
   "types": "dist/index.ts",
