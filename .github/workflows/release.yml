@@ -1,8 +1,6 @@
 name: Release
 on:
   push:
-    tags:
-      - "v*"
   workflow_dispatch:
 
 permissions:
@@ -31,17 +29,35 @@ jobs:
       - name: Build
         run: npm pack
 
+      - name: Set GITHUB_RELEASE_TAG & ARTIFACT_ID
+        run: |
+          set -eux
+          if [[ '${{ github.ref }}' = refs/tags/v* ]]; then
+            tag='${{ github.ref }}'
+            tag="${tag:10}"
+            artifactID="${tag:1}"
+          else
+            tag=CI
+            artifactID='${{ github.sha }}'
+            artifactID="${artifactID:0:8}"
+          fi
+          echo "GITHUB_RELEASE_TAG=$tag" >> $GITHUB_ENV
+          echo "ARTIFACT_ID=$artifactID" >> $GITHUB_ENV
+
+      - name: Rename artifacts
+        run: |
+          mv pumpkinmc-pumpkin-api-ts-*.tgz pumpkinmc-pumpkin-api-ts-${ARTIFACT_ID}.tgz
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           path: pumpkinmc-pumpkin-api-ts-*.tgz
 
       - name: Upload artifacts to release
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
+          tag: ${{ env.GITHUB_RELEASE_TAG }}
           file: pumpkinmc-pumpkin-api-ts-*.tgz
           overwrite: true
           file_glob: true
