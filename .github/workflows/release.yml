@@ -54,10 +54,13 @@ jobs:
           path: pumpkinmc-pumpkin-api-ts-*.tgz
 
       - name: Upload artifacts to release
-        uses: svenstaro/upload-release-action@v2
+        uses: ncipollo/release-action@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.GITHUB_RELEASE_TAG }}
-          file: pumpkinmc-pumpkin-api-ts-*.tgz
-          overwrite: true
-          file_glob: true
+          artifacts: pumpkinmc-pumpkin-api-ts-*.tgz
+          allowUpdates: true
+          omitPrereleaseDuringUpdate: true
+          omitName: true
+          omitBody: true
+          omitDraftDuringUpdate: true
+          removeArtifacts: true
