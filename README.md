@@ -10,8 +10,20 @@ This package provides the TypeScript bindings for building [Pumpkin](https://git
 
 ## Installation
 
+You'll want to download the latest version of the bindings from the [CI release](https://github.com/Pumpkin-MC/pumpkin-api-ts/releases/tag/CI).
+
+We don't have stable versions as Pumpkin and its API is still pre-release.
+
+Then `npm install` the downloaded `.tgz`. e.g.
+
 ```bash
-npm install @pumpkinmc/pumpkin-api-ts
+npm install pumpkinmc-pumpkin-api-ts-50917277.tgz
+```
+
+You may also choose to install directly from the download URL (after determining it; commit hash changes)
+
+```bash
+npm install https://github.com/Pumpkin-MC/pumpkin-api-ts/releases/download/CI/pumpkinmc-pumpkin-api-ts-XXXXXXXX.tgz
 ```
 
 ## Creating a Plugin
@@ -22,6 +34,7 @@ npm install @pumpkinmc/pumpkin-api-ts
 4. Add `export * from "@pumpkinmc/pumpkin-api-ts";` at the end.
 
 Example:
+
 ```typescript
 import { Plugin, registerPlugin } from "@pumpkinmc/pumpkin-api-ts";
 
@@ -39,7 +52,7 @@ class MyPlugin extends Plugin {
       authors: ["alex"],
       description: "A sample plugin written in TypeScript",
       dependencies: [],
-      permissions: []
+      permissions: [],
     };
   }
   onLoad(ctx: Context): void {
@@ -79,11 +92,13 @@ To build your plugin into a `.wasm` component, use the provided build script:
 ```
 
 Example:
+
 ```bash
 ./node_modules/.bin/pumpkin-plugin-build my-plugin.ts build/my-plugin.wasm
 ```
 
 For convience, it's recommended to add a scripts section to your `package.json`
+
 ```json
 {
   "scripts": {
@@ -94,4 +109,5 @@ For convience, it's recommended to add a scripts section to your `package.json`
   }
 }
 ```
+
 Execute with `npm run build`
