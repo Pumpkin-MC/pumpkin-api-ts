@@ -1,0 +1,39 @@
+name: Update WIT
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-wit:
+    name: Update WIT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Update submodule
+        id: update_submodule
+        run: |
+          set -eux
+
+          cd wit
+          git fetch origin master
+          git checkout FETCH_HEAD
+
+          echo "wit_commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Commit
+        run: |
+          set -eux
+
+          witCommit='${{ steps.update_submodule.outputs.wit_commit }}'
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add wit
+          git commit -m "Sync to Pumpkin-MC/pumpkin-plugin-wit@${witCommit}"
+          git push
