@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build": "pumpkin-plugin-build my-plugin.ts build/plugin.wasm"
+  }
+}
