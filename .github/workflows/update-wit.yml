@@ -4,7 +4,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   update-wit:
@@ -38,8 +37,3 @@ jobs:
           git add wit
           git commit -m "Sync to Pumpkin-MC/pumpkin-plugin-wit@${witCommit}"
           git push
-
-  main:
-    name: Build, test, and release
-    needs: update-wit
-    uses: ./.github/workflows/main.yml

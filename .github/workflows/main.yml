@@ -1,5 +1,13 @@
 name: Main
-on: [push, pull_request, workflow_dispatch, workflow_call]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_run:
+    types:
+      - completed
+    workflows:
+      - "Update WIT"
 
 permissions:
   contents: write
