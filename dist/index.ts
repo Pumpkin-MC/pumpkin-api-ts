@@ -7,9 +7,11 @@ import {
 } from "pumpkin:plugin/command@0.1.0";
 import { Context } from "pumpkin:plugin/context@0.1.0";
 import { Event, EventType, EventPriority } from "pumpkin:plugin/event@0.1.0";
+import { IpcMessage, PluginId } from "pumpkin:plugin/ipc@0.1.0";
 import { PluginMetadata } from "pumpkin:plugin/metadata@0.1.0";
 import * as scheduler from "pumpkin:plugin/scheduler@0.1.0";
 import { Server } from "pumpkin:plugin/server@0.1.0";
+import { Entity } from "pumpkin:plugin/world@0.1.0";
 
 export type EventHandler<T = any> = (srv: Server, evt: T) => T | void;
 export type CommandHandler = (
@@ -18,15 +20,28 @@ export type CommandHandler = (
   args: ConsumedArgs,
 ) => number;
 export type TaskHandler = (srv: Server) => void;
+export interface AiGoal {
+  canStart: (server: Server, entity: Entity) => boolean;
+  shouldContinue: (server: Server, entity: Entity) => boolean;
+  start: (server: Server, entity: Entity) => void;
+  tick: (server: Server, entity: Entity) => void;
+  stop: (server: Server, entity: Entity) => void;
+}
 
 let pluginInstance: Plugin | null = null;
 const eventHandlers = new Map<number, EventHandler>();
 const commandHandlers = new Map<number, CommandHandler>();
 const taskHandlers = new Map<number, TaskHandler>();
+const aiGoals = new Map<number, AiGoal>();
 let nextHandlerId = 0;
+let nextAiGoalId = 0;
 
 function getNextHandlerId(): number {
   return nextHandlerId++;
+}
+
+function getAiGoalId(): number {
+  return nextAiGoalId++;
 }
 
 export abstract class Plugin {
@@ -47,6 +62,10 @@ export abstract class Plugin {
   }
 
   onUnload(_ctx: Context): void {}
+
+  handleIpcMessage(sender: PluginId, message: IpcMessage): IpcMessage {
+    throw "This plugin cannot recieve messages";
+  }
 
   registerEvent(
     ctx: Context,
@@ -93,6 +112,12 @@ export abstract class Plugin {
       BigInt(delayTicks),
       BigInt(periodTicks),
     );
+  }
+
+  registerAiGoal(goal: AiGoal): number {
+    const aiGoalId = getAiGoalId();
+    aiGoals.set(aiGoalId, goal);
+    return aiGoalId;
   }
 }
 
@@ -144,6 +169,79 @@ export function handleTask(handlerId: number, srv: Server): void {
   if (handler) {
     handler(srv);
   }
+}
+
+export function handleIpcMessage(
+  sender: PluginId,
+  message: IpcMessage,
+): IpcMessage {
+  if (pluginInstance) {
+    return pluginInstance.handleIpcMessage(sender, message);
+  }
+  throw new Error("No plugin instance available?");
+}
+
+export function handleAiGoalCanStart(
+  goalId: number,
+  server: Server,
+  entity: Entity,
+): boolean {
+  const aiGoal = aiGoals.get(goalId);
+  if (aiGoal) {
+    return aiGoal.canStart(server, entity);
+  }
+  throw new Error(`No AI goal registered for ID ${goalId}`);
+}
+
+export function handleAiGoalShouldContinue(
+  goalId: number,
+  server: Server,
+  entity: Entity,
+): boolean {
+  const aiGoal = aiGoals.get(goalId);
+  if (aiGoal) {
+    return aiGoal.shouldContinue(server, entity);
+  }
+  throw new Error(`No AI goal registered for ID ${goalId}`);
+}
+
+export function handleAiGoalStart(
+  goalId: number,
+  server: Server,
+  entity: Entity,
+): void {
+  const aiGoal = aiGoals.get(goalId);
+  if (aiGoal) {
+    aiGoal.start(server, entity);
+    return;
+  }
+  throw new Error(`No AI goal registered for ID ${goalId}`);
+}
+
+export function handleAiGoalTick(
+  goalId: number,
+  server: Server,
+  entity: Entity,
+): void {
+  const aiGoal = aiGoals.get(goalId);
+  if (aiGoal) {
+    aiGoal.tick(server, entity);
+    return;
+  }
+  throw new Error(`No AI goal registered for ID ${goalId}`);
+}
+
+export function handleAiGoalStop(
+  goalId: number,
+  server: Server,
+  entity: Entity,
+): void {
+  const aiGoal = aiGoals.get(goalId);
+  if (aiGoal) {
+    aiGoal.stop(server, entity);
+    return;
+  }
+  throw new Error(`No AI goal registered for ID ${goalId}`);
 }
 
 export const metadata = {
