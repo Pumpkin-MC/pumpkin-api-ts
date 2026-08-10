@@ -53,7 +53,7 @@ jobs:
           else
             tag=CI
             artifactID='${{ github.sha }}'
-            artifactID="${artifactID:0:8}"
+            artifactID="${artifactID:0:7}"
           fi
           echo "GITHUB_RELEASE_TAG=$tag" >> $GITHUB_ENV
           echo "ARTIFACT_ID=$artifactID" >> $GITHUB_ENV
