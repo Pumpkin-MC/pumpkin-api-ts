@@ -2,6 +2,7 @@
   "name": "@pumpkinmc/pumpkin-api-ts",
   "version": "0.1.0-dev",
   "description": "Pumpkin plugin API for TypeScript",
+  "license": "MIT OR Apache-2.0",
   "main": "dist/index.ts",
   "types": "dist/index.ts",
   "files": [
