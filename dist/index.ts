@@ -11,7 +11,11 @@ import { IpcMessage, PluginId } from "pumpkin:plugin/ipc@0.1.0";
 import { PluginMetadata } from "pumpkin:plugin/metadata@0.1.0";
 import * as scheduler from "pumpkin:plugin/scheduler@0.1.0";
 import { Server } from "pumpkin:plugin/server@0.1.0";
-import { Entity } from "pumpkin:plugin/world@0.1.0";
+import {
+  ChunkBuffer,
+  Entity,
+  GenerationPhase,
+} from "pumpkin:plugin/world@0.1.0";
 
 export type EventHandler<T = any> = (srv: Server, evt: T) => T | void;
 export type CommandHandler = (
@@ -27,21 +31,21 @@ export interface AiGoal {
   tick: (server: Server, entity: Entity) => void;
   stop: (server: Server, entity: Entity) => void;
 }
+export type ChunkGenerator = (
+  phase: GenerationPhase,
+  chunk: ChunkBuffer,
+) => void;
 
 let pluginInstance: Plugin | null = null;
 const eventHandlers = new Map<number, EventHandler>();
 const commandHandlers = new Map<number, CommandHandler>();
 const taskHandlers = new Map<number, TaskHandler>();
+const generators = new Map<number, ChunkGenerator>();
 const aiGoals = new Map<number, AiGoal>();
 let nextHandlerId = 0;
-let nextAiGoalId = 0;
 
 function getNextHandlerId(): number {
   return nextHandlerId++;
-}
-
-function getAiGoalId(): number {
-  return nextAiGoalId++;
 }
 
 export abstract class Plugin {
@@ -115,9 +119,15 @@ export abstract class Plugin {
   }
 
   registerAiGoal(goal: AiGoal): number {
-    const aiGoalId = getAiGoalId();
+    const aiGoalId = getNextHandlerId();
     aiGoals.set(aiGoalId, goal);
     return aiGoalId;
+  }
+
+  registerGeneratePhaseHandler(generator: ChunkGenerator): number {
+    const generatorId = getNextHandlerId();
+    generators.set(generatorId, generator);
+    return generatorId;
   }
 }
 
@@ -242,6 +252,19 @@ export function handleAiGoalStop(
     return;
   }
   throw new Error(`No AI goal registered for ID ${goalId}`);
+}
+
+export function handleGeneratePhase(
+  generatorId: number,
+  phase: GenerationPhase,
+  chunk: ChunkBuffer,
+): void {
+  const generator = generators.get(generatorId);
+  if (generator) {
+    generator(phase, chunk);
+    return;
+  }
+  throw new Error(`No generator registered for ID ${generatorId}`);
 }
 
 export const metadata = {
