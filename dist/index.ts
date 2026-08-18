@@ -124,7 +124,7 @@ export abstract class Plugin {
     return aiGoalId;
   }
 
-  registerGeneratePhaseHandler(generator: ChunkGenerator): number {
+  registerChunkGenerator(generator: ChunkGenerator): number {
     const generatorId = getNextHandlerId();
     generators.set(generatorId, generator);
     return generatorId;
