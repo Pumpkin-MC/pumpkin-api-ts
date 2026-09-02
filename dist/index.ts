@@ -3,7 +3,9 @@
 import {
   Command,
   CommandSender,
+  CommandSuggestions,
   ConsumedArgs,
+  SuggestionRequest,
 } from "pumpkin:plugin/command@0.1.0";
 import { Context } from "pumpkin:plugin/context@0.1.0";
 import { Event, EventType, EventPriority } from "pumpkin:plugin/event@0.1.0";
@@ -23,6 +25,11 @@ export type CommandHandler = (
   srv: Server,
   args: ConsumedArgs,
 ) => number;
+export type CommandSuggestionHandler = (
+  sender: CommandSender,
+  srv: Server,
+  request: SuggestionRequest,
+) => CommandSuggestions;
 export type TaskHandler = (srv: Server) => void;
 export interface AiGoal {
   canStart: (server: Server, entity: Entity) => boolean;
@@ -39,6 +46,7 @@ export type ChunkGenerator = (
 let pluginInstance: Plugin | null = null;
 const eventHandlers = new Map<number, EventHandler>();
 const commandHandlers = new Map<number, CommandHandler>();
+const commandSuggestionHandlers = new Map<number, CommandSuggestionHandler>();
 const taskHandlers = new Map<number, TaskHandler>();
 const generators = new Map<number, ChunkGenerator>();
 const aiGoals = new Map<number, AiGoal>();
@@ -93,6 +101,12 @@ export abstract class Plugin {
     commandHandlers.set(handlerId, handler);
     cmd.executeWithHandlerId(handlerId);
     ctx.registerCommand(cmd, permission);
+  }
+
+  registerCommandSuggestionHandler(handler: CommandSuggestionHandler): number {
+    const handlerId = getNextHandlerId();
+    commandSuggestionHandlers.set(handlerId, handler);
+    return handlerId;
   }
 
   scheduleDelayedTask(
@@ -172,6 +186,19 @@ export function handleCommand(
     return handler(sender, srv, args);
   }
   throw new Error(`No handler for command ID ${commandId}`);
+}
+
+export function handleCommandSuggestion(
+  handlerId: number,
+  sender: CommandSender,
+  srv: Server,
+  request: SuggestionRequest,
+): CommandSuggestions {
+  const handler = commandSuggestionHandlers.get(handlerId);
+  if (handler) {
+    return handler(sender, srv, request);
+  }
+  throw new Error(`No command suggestion handler registered for ID ${handler}`);
 }
 
 export function handleTask(handlerId: number, srv: Server): void {
