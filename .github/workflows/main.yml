@@ -60,7 +60,8 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv pumpkinmc-pumpkin-api-ts-*.tgz pumpkinmc-pumpkin-api-ts-${ARTIFACT_ID}.tgz
+          mv pumpkinmc-pumpkin-api-ts-*.tgz pumpkinmc-pumpkin-api-ts.tgz
+          mv pumpkinmc-pumpkin-api-ts.tgz pumpkinmc-pumpkin-api-ts-${ARTIFACT_ID}.tgz
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
