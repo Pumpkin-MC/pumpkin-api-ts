@@ -3,6 +3,10 @@
   "version": "0.1.2",
   "description": "Pumpkin plugin API for TypeScript",
   "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pumpkin-MC/pumpkin-api-ts.git"
+  },
   "main": "dist/index.ts",
   "types": "dist/index.ts",
   "files": [
@@ -11,7 +15,7 @@
     "wit"
   ],
   "publishConfig": {
-    "tag": "dev"
+    "access": "public"
   },
   "bin": {
     "pumpkin-plugin-build": "src/build.js"

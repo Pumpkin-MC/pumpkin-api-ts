@@ -1,0 +1,46 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish package to npm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm to latest (required for Trusted Publishing)
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm install -D
+
+      - name: Build and test example plugin
+        run: |
+          set -eux
+          npm pack
+          cd example
+          npm install ../*.tgz
+          npm run build
+          cd ..
+          rm -f *.tgz
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
