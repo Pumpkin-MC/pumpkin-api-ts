@@ -1,6 +1,7 @@
 name: Main
 on:
   push:
+    branches: [master]
   pull_request:
   workflow_dispatch:
   workflow_run:
@@ -12,10 +13,16 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   main:
     name: Build, test, and release
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -80,3 +87,10 @@ jobs:
           omitBody: true
           omitDraftDuringUpdate: true
           removeArtifacts: true
+
+      - name: Trigger publish
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run publish.yml --ref "${{ github.ref }}"

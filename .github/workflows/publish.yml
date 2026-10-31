@@ -1,9 +1,6 @@
 name: Publish to npm
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -13,34 +10,25 @@ permissions:
 jobs:
   publish:
     name: Publish package to npm
-    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-slim
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
-          registry-url: 'https://registry.npmjs.org'
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
 
       - name: Upgrade npm to latest (required for Trusted Publishing)
         run: npm install -g npm@latest
 
-      - name: Install dependencies
-        run: npm install -D
-
-      - name: Build and test example plugin
+      - name: Download artifact from GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -eux
-          npm pack
-          cd example
-          npm install ../*.tgz
-          npm run build
-          cd ..
-          rm -f *.tgz
+          gh release -R "${{ github.repository }}" download "${{ github.ref_name }}" --pattern "pumpkinmc-pumpkin-api-ts-*.tgz" --dir .
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: npm publish pumpkinmc-pumpkin-api-ts-*.tgz --provenance --access public
