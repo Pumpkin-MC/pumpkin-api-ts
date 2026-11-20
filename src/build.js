@@ -5,6 +5,8 @@ import { componentize } from "componentize-qjs";
 import * as path from "node:path";
 import * as fs from "node:fs";
 
+const bundledWitDir = path.join(import.meta.dirname, "../wit/v0.1");
+
 async function buildPlugin(entryPath, outputPath, witDir) {
   const tempJs = path.join(path.dirname(outputPath), "temp.js");
 
@@ -26,6 +28,7 @@ async function buildPlugin(entryPath, outputPath, witDir) {
       witPath: witDir,
       jsSource: fs.readFileSync(tempJs, "utf8"),
       optSize: true,
+      sync: fs.realpathSync.native(bundledWitDir) === fs.realpathSync.native(witDir),
       minify: true,
     });
 
@@ -51,7 +54,7 @@ if (args.length < 2) {
 
 const entry = args[0];
 const output = args[1];
-const wit = args[2] || path.join(import.meta.dirname, "../wit/v0.1");
+const wit = args[2] || bundledWitDir;
 
 buildPlugin(entry, output, wit).catch((err) => {
   console.error(err);
