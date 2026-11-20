@@ -28,7 +28,7 @@ async function buildPlugin(entryPath, outputPath, witDir) {
       witPath: witDir,
       jsSource: fs.readFileSync(tempJs, "utf8"),
       optSize: true,
-      sync: path.relative(bundledWitDir, witDir) === "",
+      sync: fs.realpathSync.native(bundledWitDir) === fs.realpathSync.native(witDir),
       minify: true,
     });
 
