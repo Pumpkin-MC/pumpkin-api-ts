@@ -6,20 +6,20 @@ import {
   CommandSuggestions,
   ConsumedArgs,
   SuggestionRequest,
-} from "pumpkin:plugin/command@0.1.0";
-import { Context } from "pumpkin:plugin/context@0.1.0";
-import { Event, EventType, EventPriority } from "pumpkin:plugin/event@0.1.0";
-import { IpcMessage, PluginId } from "pumpkin:plugin/ipc@0.1.0";
-import { PluginMetadata } from "pumpkin:plugin/metadata@0.1.0";
-import * as scheduler from "pumpkin:plugin/scheduler@0.1.0";
-import { Server } from "pumpkin:plugin/server@0.1.0";
+} from "pumpkin:plugin/command@0.2.0";
+import { Context } from "pumpkin:plugin/context@0.2.0";
+import { Event, EventType, EventPriority } from "pumpkin:plugin/event@0.2.0";
+import { IpcMessage, PluginId } from "pumpkin:plugin/ipc@0.2.0";
+import { PluginMetadata } from "pumpkin:plugin/metadata@0.2.0";
+import * as scheduler from "pumpkin:plugin/scheduler@0.2.0";
+import { Server } from "pumpkin:plugin/server@0.2.0";
 import {
   ChunkBuffer,
   Entity,
   GenerationPhase,
-} from "pumpkin:plugin/world@0.1.0";
+} from "pumpkin:plugin/world@0.2.0";
 
-export type EventHandler<T = any> = (srv: Server, evt: T) => T | void;
+export type EventHandler = (srv: Server, evt: Event) => void;
 export type CommandHandler = (
   sender: CommandSender,
   srv: Server,
@@ -164,13 +164,10 @@ export function onUnload(ctx: Context): void {
   }
 }
 
-export function handleEvent(eventId: number, srv: Server, evt: Event): Event {
+export function handleEvent(eventId: number, srv: Server, evt: Event) {
   const handler = eventHandlers.get(eventId);
   if (handler) {
-    const result = handler(srv, evt.val);
-    if (result !== undefined) {
-      evt.val = result;
-    }
+    handler(srv, evt);
   }
   return evt;
 }

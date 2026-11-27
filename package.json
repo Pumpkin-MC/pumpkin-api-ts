@@ -1,6 +1,6 @@
 {
   "name": "@pumpkinmc/pumpkin-api-ts",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Pumpkin plugin API for TypeScript",
   "license": "MIT OR Apache-2.0",
   "repository": {
@@ -21,13 +21,13 @@
     "pumpkin-plugin-build": "src/build.js"
   },
   "scripts": {
-    "prepare": "jco guest-types wit/v0.1 -n plugin -o dist/bindings --name index"
+    "prepare": "jco guest-types wit/v0.2 -n plugin -o dist/bindings --name index"
   },
   "dependencies": {
-    "componentize-qjs": "^0.4.5",
+    "componentize-qjs": "^0.6.0",
     "esbuild": "^0.28.2"
   },
   "devDependencies": {
-    "@bytecodealliance/jco": "^1.34.0"
+    "@bytecodealliance/jco": "^1.42.0"
   }
 }
